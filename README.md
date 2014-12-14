@@ -37,7 +37,7 @@ Usage
 ----
 
   1. Download and install SL4A on your Android phone
-  2. Copy speech2pc.py in to your SD card
+  2. Copy speech_gui.py and layout.xml in to your SD card
 
 License
 ----

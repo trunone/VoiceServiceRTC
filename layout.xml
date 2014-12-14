@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/background"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ff000000"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditText
+        android:id="@+id/result"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:text="Rcognition Result"
+        android:textSize="18sp"
+        android:layout_above="@+id/recognize"
+        android:layout_alignParentLeft="true" />
+    <Button
+        android:id="@+id/right"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Right"
+        android:layout_alignTop="@+id/stop"
+        android:layout_toRightOf="@+id/stop" />
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Stop"
+        android:layout_alignTop="@+id/left"
+        android:layout_alignLeft="@+id/forward" />
+    <Button
+        android:id="@+id/left"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Left"
+        android:layout_below="@+id/forward"
+        android:layout_toLeftOf="@+id/forward" />
+    <Button
+        android:id="@+id/forward"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Forward"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:id="@+id/recognize"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:text="Recognize"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" />
+    <Button
+        android:id="@+id/go_to"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Go To"
+        android:layout_alignTop="@+id/Save"
+        android:layout_alignLeft="@+id/right" />
+    <Button
+        android:id="@+id/save"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Save"
+        android:layout_alignTop="@+id/backward"
+        android:layout_alignLeft="@+id/left" />
+    <Button
+        android:id="@+id/backward"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Backward"
+        android:layout_below="@+id/right"
+        android:layout_alignLeft="@+id/stop" />
+</RelativeLayout>
+

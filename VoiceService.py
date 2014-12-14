@@ -28,6 +28,7 @@ import OpenRTM_aist
 # </rtc-template>
 
 import socket
+import threading
 
 # This module's spesification
 # <rtc-template block="module_spec">
@@ -41,14 +42,25 @@ voiceservice_spec = ["implementation_id", "VoiceService",
                  "max_instance",      "1",
                  "language",          "Python",
                  "lang_type",         "SCRIPT",
-                 "conf.default.android_host", "192.168.0.100",
-                 "conf.default.android_port", "5000",
+                 "conf.default.android_host", "192.168.3.208",
+                 "conf.default.android_port", "60000",
                  "conf.default.buffersize", "4096",
                  "conf.__widget__.android_host", "text",
                  "conf.__widget__.android_port", "text",
                  "conf.__widget__.buffersize", "text",
                  ""]
 # </rtc-template>
+
+#class recvThread(threading.Thread):
+#    def __init__(self, sock):
+#        threading.Thread.__init__(self)
+#        self.sock = sock
+#    def run(self):
+#        recv(self.sock)
+#
+#def recv(sock):
+#    while True:
+
 
 ##
 # @class VoiceService
@@ -77,8 +89,8 @@ class VoiceService(OpenRTM_aist.DataFlowComponentBase):
         """
         self._speechOut = OpenRTM_aist.OutPort("speech", self._d_speech)
 
-
-
+        self.sock = None
+        self.client = None
 
 
         # initialize of configuration-data.
@@ -88,13 +100,13 @@ class VoiceService(OpenRTM_aist.DataFlowComponentBase):
          - Name:  android_host
          - DefaultValue: 192.168.0.100
         """
-        self._android_host = ['192.168.0.100']
+        self._android_host = ['192.168.3.208']
         """
 
          - Name:  android_port
          - DefaultValue: 5000
         """
-        self._android_port = [5000]
+        self._android_port = [60000]
         """
 
          - Name:  buffersize
@@ -116,8 +128,8 @@ class VoiceService(OpenRTM_aist.DataFlowComponentBase):
     #
     def onInitialize(self):
         # Bind variables and configuration variable
-        self.bindParameter("android_host", self._android_host, "192.168.0.100")
-        self.bindParameter("android_port", self._android_port, "5000")
+        self.bindParameter("android_host", self._android_host, "192.168.3.208")
+        self.bindParameter("android_port", self._android_port, "60000")
         self.bindParameter("buffersize", self._buffersize, "4096")
 
         # Set InPort buffers
@@ -186,6 +198,9 @@ class VoiceService(OpenRTM_aist.DataFlowComponentBase):
         #
         #
     def onActivated(self, ec_id):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind(('', 8080))
+        self.sock.listen(10)
 
         return RTC.RTC_OK
 
@@ -214,33 +229,20 @@ class VoiceService(OpenRTM_aist.DataFlowComponentBase):
         #
         #
     def onExecute(self, ec_id):
-        mode = raw_input('Select Mode >>> ')
+        if not self.client:
+            print 'Wating connection...'
+            self.client, address = self.sock.accept()
 
-        # If not input then start recognition
-        if mode == '':
-            sock = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-            sock.connect( ( self._android_host[0], self._android_port[0] ) )
-
-            print( "Android: %s :%d" )%( self._android_host[0], self._android_port[0] )
-
-            sock.send( 'recognize' )
-            data = sock.recv(self._buffersize[0])
-
-            print( "Speech Recognition Result: %s" ) %( data )
-            self._d_speech.data = data
+        payload = self.client.recv(4096)
+        if payload:
+            print "Speech Recognition Result: %s" % payload
+            self._d_speech.data = payload
             OpenRTM_aist.setTimestamp(self._d_speech)
+            self.client.send(payload)
             self._speechOut.write()
-
-        # Else start speech
         else:
-            sock = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-            sock.connect( ( self._android_host[0], self._android_port[0] ) )
-
-            print( "Android: %s :%d" )%( self._android_host[0], self._android_port[0] )
-
-            sock.send( self._d_tts.data )
-
-            print( "Text to Speech: %s" ) %( self._d_tts.data )
+            self.client.close()
+            self.client = None
 
         return RTC.RTC_OK
 
